@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -29,19 +30,62 @@ public class Jotto {
         readWords();
     }
 
+    /**
+     * pick a word in word list and make it the current word
+     * @return false if all are guessed, true else
+     */
     public boolean pickWord(){
+        Random r = new Random();
+        currentWord = wordList.get(r.nextInt(wordList.size()));
+        if(playWords.contains(currentWord) && playWords.size() == wordList.size()){
+            System.out.println("You've guessed them all!");
+            return false;
+        }
 
-        return false;
+        if(playWords.contains(currentWord) && playWords.size() != wordList.size()){
+            pickWord();
+        }
+        playWords.add(currentWord);
+
+        if(DEBUG){
+            System.out.println(currentWord);
+        }
+        return true;
     }
 
+    /**
+     * show the word list
+     * @return a string of the words
+     */
     public String showWordList(){
-
-        return null;
+        StringBuilder sb = new StringBuilder();
+        sb.append("Current word list:\n");
+        for (String s : wordList) {
+            sb.append(s).append("\n");
+        }
+        return sb.toString();
     }
 
+    /**
+     * show the guesses the player has made. Can add those guesses to available words
+     * @return the ArrayList of playGuesses
+     */
     public ArrayList<String> showPlayerGuesses(){
-
-        return null;
+        Scanner in = new Scanner(System.in);
+        if(playGuesses.isEmpty()){
+            System.out.println("No guesses yet");
+            return playGuesses;
+        }
+        System.out.println("Current guesses: ");
+        for(String p : playGuesses){
+            System.out.println(p);
+        }
+        System.out.print("Would you like to add the words to the word list? (y/n)");
+        if(in.next().equalsIgnoreCase("y")){
+            updateWordList();
+            showWordList();
+        }
+        return playGuesses;
     }
 
     public void playerGuessesScores(ArrayList<String> al){
@@ -67,6 +111,9 @@ public class Jotto {
         return wordList;
     }
 
+    /**
+     * The UI of the game. Allows users to see stats and start the game
+     */
     public void play(){
         Scanner in = new Scanner(System.in);
         System.out.print("Welcome to the game.");
@@ -115,11 +162,32 @@ public class Jotto {
         return 0;
     }
 
+    /**
+     * return a string of words to print
+     * @return the string of words
+     */
     public String showPlayedWords(){
-        return null;
+        if(playWords.isEmpty()){
+            return "No words have been played.";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Current list of played words:\n");
+        for (String word : playWords){
+            sb.append(word).append("\n");
+        }
+        return sb.toString();
     }
 
-    public boolean addPlayerGuess(String guess){
+    /**
+     * adds a player guess if not already guessed
+     * @param wordGuess as a String
+     * @return true if added
+     */
+    public boolean addPlayerGuess(String wordGuess){
+        if(!playGuesses.contains(wordGuess)){
+            playGuesses.add(wordGuess);
+            return true;
+        }
         return false;
     }
 
