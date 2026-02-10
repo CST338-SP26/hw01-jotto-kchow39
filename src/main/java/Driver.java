@@ -7,8 +7,8 @@ import java.util.ArrayList;
  */
 public class Driver {
     public static void main(String[] args) {
-        String filepath = "oiled.txt";
-//        String filepath = "debug.txt";
+//        String filepath = "oiled.txt";
+        String filepath = "debug.txt";
 //        String filepath = "wordList.txt";
         Jotto game = new Jotto(filepath);
         game.play();
@@ -26,8 +26,8 @@ public class Driver {
             System.out.println("value is : " + s);
         }
 
-//        System.out.println(game.readWords());
-//        System.out.println(game.readWords());
-//        game.updateWordList();
+        System.out.println(game.readWords());
+        System.out.println(game.readWords());
+        game.updateWordList();
     }
 }

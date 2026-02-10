@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -13,12 +15,14 @@ public class Jotto {
     private static final int WORD_SIZE = 5;
     private static final boolean DEBUG = true;
 
-    private String currentWord;
-    private int score;
-    private ArrayList<String> playGuesses;
-    private ArrayList<String> playWords;
-    private ArrayList<String> wordList;
+    private final ArrayList<String> playGuesses; //words guessed by player
+    private final ArrayList<String> playWords;
+    private final ArrayList<String> wordList; //list of possible words
+
     private String filename;
+    private String currentWord; //word trying to be guessed
+    private int score; //player's score
+
 
     public Jotto(String filename) {
         wordList = new ArrayList<>();
@@ -82,14 +86,22 @@ public class Jotto {
         }
         System.out.print("Would you like to add the words to the word list? (y/n)");
         if(in.next().equalsIgnoreCase("y")){
+            System.out.println("Updating word list.");
             updateWordList();
             showWordList();
         }
         return playGuesses;
     }
 
-    public void playerGuessesScores(ArrayList<String> al){
-
+    /**
+     * prints out the previous guesses and their score
+     * @param guesses as ArrayList<String>
+     */
+    public void playerGuessScores(ArrayList<String> guesses){
+        System.out.println("Guess\t\tScore");
+        for (String guess : guesses) {
+            System.out.printf("%s\t\t%d\n", guess, getLetterCount(guess));
+        }
     }
 
     /**
@@ -140,10 +152,10 @@ public class Jotto {
                             System.out.println("I don't know what \"" + userInput + "\" is.");
                         }
                     } else {
-                        showPlayedWords();
+                        System.out.println(showPlayedWords());
                     }
                 } else {
-                    showWordList();
+                    System.out.println(showWordList());
                 }
             } else {
                 if (pickWord()){
@@ -159,7 +171,53 @@ public class Jotto {
     }
 
     public int guess(){
-        return 0;
+        ArrayList<String> currentGuesses = new ArrayList<>(); //stores all words entered by user for current round
+        Scanner scan = new Scanner(System.in); //reads user input and stores in wordGuess
+        int letterCount; //counts the letters wordGuess has in common with currentWord
+        int score = WORD_SIZE + 1; //score for current round
+        String wordGuess; //word user has guessed
+
+        while(true){
+            System.out.println("Current Score: " + score);
+            System.out.print("What is your guess (q to quit): ");
+            wordGuess = scan.next();
+            if(wordGuess.equals("q")){
+                if(score > 0){
+                    score = 0;
+                }
+                break;
+            }
+            if(wordGuess.length() != WORD_SIZE){
+                System.out.println("Word must be " + WORD_SIZE + " characters (" + wordGuess + " is " + wordGuess.length() + ")");
+                continue;
+            }
+            addPlayerGuess(wordGuess);
+
+            if(wordGuess.equalsIgnoreCase(currentWord)){
+                System.out.println("DINGDINGDING!!! the word was " + currentWord);
+                currentGuesses.add(wordGuess);
+                playerGuessScores(currentGuesses);
+                return score;
+            }
+
+            if(currentGuesses.contains(wordGuess)){
+                System.out.println("You have already played this word");
+                continue;
+            }
+
+            currentGuesses.add(wordGuess);
+
+            letterCount = getLetterCount(wordGuess);
+
+            if(letterCount != WORD_SIZE){
+                System.out.println(wordGuess + " has a Jotto score of " + letterCount);
+            } else {
+                System.out.println(wordGuess + " is an anagram");
+            }
+            score--;
+            playerGuessScores(currentGuesses);
+        }
+        return score;
     }
 
     /**
@@ -191,13 +249,48 @@ public class Jotto {
         return false;
     }
 
+    /**
+     * add play guesses to the word list and then write the word list to the original
+     */
     public void updateWordList(){
-
+        try{
+          FileWriter fw = new FileWriter(filename);
+            for (String playGuess : playGuesses) {
+                if (!wordList.contains(playGuess)) {
+                    wordList.add(playGuess);
+                }
+            }
+            for (String s : wordList) {
+                fw.write(s);
+            }
+          fw.close();
+        } catch(IOException e) {
+            System.out.println("An error occurred while writing to " + filename);
+        }
     }
 
+    /**
+     * return the amount of letters the words have in common
+     * @param wordGuess as a String
+     * @return count as an int
+     */
     public int getLetterCount(String wordGuess){
-
-        return -1;
+        int count = 0;
+        if(wordGuess.equalsIgnoreCase(currentWord)){
+            return WORD_SIZE;
+        }
+        wordGuess = wordGuess.toLowerCase();
+        ArrayList<Character> currentWordChar = new ArrayList<>();
+        for(int i = 0; i < currentWord.length(); i++){
+            currentWordChar.add(currentWord.charAt(i));
+        }
+        for(int i = 0; i < wordGuess.length(); i++){
+            if(currentWordChar.contains(wordGuess.charAt(i))){
+                currentWordChar.remove(Character.valueOf(wordGuess.charAt(i)));
+                count++;
+            }
+        }
+        return count;
     }
 
     public String getCurrentWord() {
@@ -208,40 +301,8 @@ public class Jotto {
         this.currentWord = currentWord;
     }
 
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public ArrayList<String> getPlayGuesses() {
-        return playGuesses;
-    }
-
-    public void setPlayGuesses(ArrayList<String> playGuesses) {
-        this.playGuesses = playGuesses;
-    }
-
     public ArrayList<String> getPlayedWords() {
         return playWords;
-    }
-
-    public void setPlayWords(ArrayList<String> playWords) {
-        this.playWords = playWords;
-    }
-
-    public ArrayList<String> getWordList() {
-        return wordList;
-    }
-
-    public void setWordList(ArrayList<String> wordList) {
-        this.wordList = wordList;
-    }
-
-    public String getFilename() {
-        return filename;
     }
 
     public void setFilename(String filename) {
