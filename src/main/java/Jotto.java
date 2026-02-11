@@ -16,7 +16,7 @@ public class Jotto {
     private static final boolean DEBUG = true;
 
     private final ArrayList<String> playGuesses; //words guessed by player
-    private final ArrayList<String> playWords;
+    private final ArrayList<String> playWords; //words previously to be guessed
     private final ArrayList<String> wordList; //list of possible words
 
     private String filename;
@@ -41,20 +41,21 @@ public class Jotto {
     public boolean pickWord(){
         Random r = new Random();
         currentWord = wordList.get(r.nextInt(wordList.size()));
-        if(playWords.contains(currentWord) && playWords.size() == wordList.size()){
-            System.out.println("You've guessed them all!");
-            return false;
-        }
-
-        if(playWords.contains(currentWord) && playWords.size() != wordList.size()){
-            pickWord();
-        }
-        playWords.add(currentWord);
-
-        if(DEBUG){
-            System.out.println(currentWord);
+        if(playWords.contains(currentWord)){
+            if(playWords.size() == wordList.size()){
+                System.out.println("You've guessed them all!");
+                return false;
+            } else {
+                pickWord();
+            }
+        } else {
+            playWords.add(currentWord);
+            if(DEBUG){
+                System.out.println(currentWord);
+            }
         }
         return true;
+
     }
 
     /**
@@ -170,6 +171,10 @@ public class Jotto {
         } while(true);
     }
 
+    /**
+     * The game - gives scores accordingly to if you guessed the word
+     * @return the score
+     */
     public int guess(){
         ArrayList<String> currentGuesses = new ArrayList<>(); //stores all words entered by user for current round
         Scanner scan = new Scanner(System.in); //reads user input and stores in wordGuess
@@ -261,7 +266,7 @@ public class Jotto {
                 }
             }
             for (String s : wordList) {
-                fw.write(s);
+                fw.write(s + "\n");
             }
           fw.close();
         } catch(IOException e) {
