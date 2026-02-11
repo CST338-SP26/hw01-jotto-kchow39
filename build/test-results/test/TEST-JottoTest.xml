@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="JottoTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-02-11T02:43:46.498Z" hostname="ORACLE" time="0.031">
+<testsuite name="JottoTest" tests="1" skipped="1" failures="0" errors="0" timestamp="2026-02-11T03:38:48.627Z" hostname="ORACLE" time="4.417">
   <properties/>
-  <testcase name="pickWord()" classname="JottoTest" time="0.031"/>
-  <system-out><![CDATA[salet
-oiled
-Pickword test: oiled
-adieu
-Pickword test: adieu
-grant
-Pickword test: grant
-You've guessed them all!
-]]></system-out>
+  <testcase name="showPlayedWords()" classname="JottoTest" time="4.417">
+    <skipped/>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

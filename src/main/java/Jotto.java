@@ -114,7 +114,10 @@ public class Jotto {
             File f = new File(filename);
             Scanner fs = new Scanner(f);
             while(fs.hasNext()){
-                wordList.add(fs.next());
+                String input = fs.next();
+                if(!wordList.contains(input)){
+                    wordList.add(input);
+                }
             }
 
             return wordList;
@@ -168,7 +171,7 @@ public class Jotto {
             System.out.print("Press enter to continue");
             in.nextLine();
             in.nextLine();
-        } while(true);
+        } while (true);
     }
 
     /**
