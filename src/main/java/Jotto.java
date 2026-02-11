@@ -85,7 +85,7 @@ public class Jotto {
         for(String p : playGuesses){
             System.out.println(p);
         }
-        System.out.print("Would you like to add the words to the word list? (y/n)");
+        System.out.print("Would you like to add the words to the word list? (y/n) ");
         if(in.next().equalsIgnoreCase("y")){
             System.out.println("Updating word list.");
             updateWordList();
